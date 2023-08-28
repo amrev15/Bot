@@ -34,7 +34,17 @@ query_text = st.text_input('Enter your question:', placeholder = 'Please provide
 # Form input and query
 result = []
 with st.form('myform', clear_on_submit=True):
-    openai_api_key = st.secrets["openai_api_key"]
+    with st.sidebar:
+        st.title('🤖💬 OpenAI Chatbot')
+        if 'OPENAI_API_KEY' in st.secrets:
+            st.success('API key already provided!', icon='✅')
+            openai_api_key = st.secrets['OPENAI_API_KEY']
+        else:
+            openai_api_key = st.text_input('Enter OpenAI API token:', type='password')
+            if not (openai_api_key.startswith('sk-') and len(openai_api_key)==51):
+                st.warning('Please enter your credentials!', icon='⚠️')
+            else:
+                st.success('Proceed to entering your prompt message!', icon='👉')
     submitted = st.form_submit_button('Submit', disabled=not(uploaded_file and query_text))
     if submitted and openai_api_key.startswith('sk-'):
         with st.spinner('Calculating...'):
@@ -43,4 +53,4 @@ with st.form('myform', clear_on_submit=True):
             del openai_api_key
 
 if len(result):
-    st.info(response) 
+    st.info(response)
